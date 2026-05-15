@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: online-medical-record
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/medical_record}
+    username: ${SPRING_DATASOURCE_USERNAME:medical}
+    password: ${SPRING_DATASOURCE_PASSWORD:medical}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}

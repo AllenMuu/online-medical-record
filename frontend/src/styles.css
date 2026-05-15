@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Public Sans", system-ui, sans-serif;
+  background: #f7f9fc;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-strong to-primary px-6 py-3 font-headline font-extrabold text-white shadow-ambient transition hover:brightness-105;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-lg border border-outline bg-white px-6 py-3 font-headline font-extrabold text-slate-600 transition hover:bg-slate-50;
+  }
+
+  .btn-dashed {
+    @apply mt-4 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-outline bg-white px-5 py-3 font-bold text-primary;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border-0 bg-surface-low px-4 py-3 text-sm font-semibold text-ink outline-none transition placeholder:text-slate-400 focus:bg-blue-50 focus:ring-2 focus:ring-blue-100;
+  }
+
+  .input-pill {
+    @apply rounded-full border-0 bg-surface-low px-4 py-3 text-sm font-semibold outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-100;
+  }
+
+  .form-label {
+    @apply mb-2 block text-sm font-extrabold text-slate-600;
+  }
+
+  .form-label.required::before {
+    content: "* ";
+    color: #ba1a1a;
+  }
+
+  .panel {
+    @apply rounded-xl bg-white p-7 shadow-ambient;
+  }
+
+  .table-card {
+    @apply overflow-hidden rounded-xl bg-white shadow-ambient;
+  }
+
+  .table-grid {
+    @apply grid items-center gap-5 border-b border-outline/40 px-8 py-6 text-sm;
+  }
+
+  .avatar-chip {
+    @apply grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-headline font-extrabold;
+  }
+
+  .badge {
+    @apply inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-extrabold text-blue-700;
+  }
+
+  .stat-card {
+    @apply rounded-xl bg-white p-10 font-bold text-muted shadow-ambient;
+  }
+
+  .stat-card strong {
+    @apply mt-5 block font-headline text-4xl font-extrabold text-ink;
+  }
+
+  .record-section {
+    @apply space-y-6 rounded-xl bg-white p-8 shadow-ambient;
+  }
+
+  .record-section h2 {
+    @apply border-l-8 pl-4 font-headline text-2xl font-extrabold;
+  }
+
+  .record-section.blue h2 {
+    @apply border-primary;
+  }
+
+  .record-section.slate h2 {
+    @apply border-slate-500;
+  }
+
+  .side-card {
+    @apply rounded-xl bg-white p-7 shadow-ambient;
+  }
+
+  .side-card h3 {
+    @apply mb-6 border-l-8 border-slate-400 pl-4 font-headline text-xl font-extrabold;
+  }
+
+  .side-card.amber h3 {
+    @apply border-amber-700;
+  }
+}
+
+@media (max-width: 900px) {
+  .table-grid {
+    min-width: 860px;
+  }
+}

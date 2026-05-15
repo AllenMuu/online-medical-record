@@ -1,0 +1,98 @@
+import { ArrowRight, Eye, Lock, MessageSquare, UserRound } from 'lucide-react';
+import { FormEvent, useState } from 'react';
+import { useAuth } from '../AuthContext';
+import { api } from '../api';
+
+const wechatIcon =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuBxs_huTfy8BCC701SM-kL8imTMTZUJ5OEPujsKK1A08wAhekEIo9_URmWpLTThsDXp7eIh0vQdGE-IF2w-Bi5ReikFj4Z3tPTMvZHGiAp0Nj0hX6640qRm4sQyqU9E15E0vhepaa4gCbTcq71z9KjnJ3A6J2urTMGGD71Hnz7DAQQx4mBaKwcfIFHiiXGmax0agUNKUCZ1FDqs9oodNHrz2mDRdKNQkP0JnobL0XzxgEnLYZM9q8eRCpsrAJaOjo_fjg3vZSGTqDM';
+const dingTalkIcon =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuDt40mGIoSHWHfgXlaFGyD6XW15wiVtXQ9-wCSYhIrnOkLWwaSQI1YYMv5z69Atnjnp78lZAUfdiCs9q4wZcMvyuzvldohyn-ejGRu5FWunt3YrryVtbeE5NC2lCElseRDlbu4r_9Vd8F5JtU_95mt0bUiKwFmt6Sap2zsLrvt-RWWbej2KSGja4BAtVDAmUFF2eEvJgLNXQrftChxXO-n6uI50eHOHQKnNMcU3f1hn2rKExVP2o5X7E4X-KrgY8OCipTYPYi7AUwM';
+
+export function LoginPage() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState('admin@aura.local');
+  const [password, setPassword] = useState('Admin123!');
+  const [error, setError] = useState('');
+  const [resetToken, setResetToken] = useState('');
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError('');
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '登录失败');
+    }
+  };
+
+  const requestReset = async () => {
+    setError('');
+    try {
+      const result = await api.requestReset(email);
+      setResetToken(result.resetToken || result.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '重置失败');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-blue-50 font-body text-ink">
+      <div className="flex justify-center pt-12">
+        <div className="flex items-center gap-3">
+          <div className="grid h-9 w-9 place-items-center rounded-md bg-blue-800 text-white">
+            <Lock size={22} />
+          </div>
+          <span className="font-headline text-2xl font-extrabold tracking-tight text-blue-800">Aura 临床管理系统</span>
+        </div>
+      </div>
+      <div className="grid min-h-[calc(100vh-180px)] place-items-center px-5 py-12">
+        <form className="w-full max-w-[520px] rounded-xl bg-white px-10 py-12 shadow-ambient" onSubmit={submit}>
+          <div className="mb-10 text-center">
+            <h1 className="font-headline text-3xl font-bold">欢迎登录</h1>
+            <p className="mt-3 text-sm font-semibold text-muted">请输入您的凭据以访问临床后台</p>
+          </div>
+          <label className="form-label">账号 / 手机号</label>
+          <div className="relative mb-6">
+            <UserRound className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input className="input-field pl-12" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="请输入您的账号" />
+          </div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="form-label mb-0">密码</label>
+            <button type="button" className="text-xs font-bold text-primary" onClick={requestReset}>
+              忘记密码?
+            </button>
+          </div>
+          <div className="relative mb-5">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input className="input-field px-12" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="请输入登录密码" />
+            <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+          </div>
+          <label className="mb-8 flex items-center gap-3 text-sm font-semibold text-slate-700">
+            <input type="checkbox" className="h-5 w-5 rounded border-outline" />
+            记住账号
+          </label>
+          {error && <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
+          {resetToken && <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-xs font-semibold text-blue-700">本地重置令牌：{resetToken}</div>}
+          <button className="btn-primary h-14 w-full justify-center text-base">
+            立即登录
+            <ArrowRight size={20} />
+          </button>
+          <button type="button" className="mt-8 flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-surface-low font-bold text-slate-600">
+            <MessageSquare size={19} />
+            短信验证码登录
+          </button>
+          <div className="my-8 flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <span className="h-px flex-1 bg-outline/60" />
+            第三方登录
+            <span className="h-px flex-1 bg-outline/60" />
+          </div>
+          <div className="flex justify-center gap-8">
+            <img className="h-12 w-12 rounded-xl bg-slate-50 p-3 grayscale" src={wechatIcon} alt="微信登录" />
+            <img className="h-12 w-12 rounded-xl bg-slate-50 p-3 grayscale" src={dingTalkIcon} alt="钉钉登录" />
+          </div>
+        </form>
+      </div>
+      <footer className="pb-8 text-center text-xs font-semibold text-slate-400">隐私政策 | 服务条款 | 联系支持 | © 2024 Aura 临床管理系统</footer>
+    </div>
+  );
+}
