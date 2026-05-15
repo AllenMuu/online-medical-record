@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:18.4-alpine
+    container_name: aura-medical-postgres
+    environment:
+      POSTGRES_DB: medical_record
+      POSTGRES_USER: medical
+      POSTGRES_PASSWORD: medical
+      PGDATA: /var/lib/postgresql/18/docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres18_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medical -d medical_record"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres18_data:

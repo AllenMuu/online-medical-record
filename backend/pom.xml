@@ -8,7 +8,7 @@
     <artifactId>online-medical-record</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>online-medical-record</name>
-    <description>Aura clinical precision system backend</description>
+    <description>Ice clinical precision system backend</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
