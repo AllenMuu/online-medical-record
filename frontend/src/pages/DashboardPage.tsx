@@ -30,12 +30,6 @@ export function DashboardPage() {
           </div>
         ))}
       </div>
-      <div className="mt-8 rounded-xl bg-white p-8 shadow-ambient">
-        <h2 className="font-headline text-2xl font-extrabold">临床指南提醒</h2>
-        <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-muted">
-          当前患者群体录入平均时长为 4.5 分钟。请确保诊断编码符合 ICD-10 标准，并在提交前复核用药剂量。
-        </p>
-      </div>
     </>
   );
 }

@@ -1,12 +1,7 @@
-import { ArrowRight, Eye, Lock, MessageSquare, UserRound } from 'lucide-react';
+import { ArrowRight, Eye, Lock, UserRound } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { api } from '../api';
-
-const wechatIcon =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBxs_huTfy8BCC701SM-kL8imTMTZUJ5OEPujsKK1A08wAhekEIo9_URmWpLTThsDXp7eIh0vQdGE-IF2w-Bi5ReikFj4Z3tPTMvZHGiAp0Nj0hX6640qRm4sQyqU9E15E0vhepaa4gCbTcq71z9KjnJ3A6J2urTMGGD71Hnz7DAQQx4mBaKwcfIFHiiXGmax0agUNKUCZ1FDqs9oodNHrz2mDRdKNQkP0JnobL0XzxgEnLYZM9q8eRCpsrAJaOjo_fjg3vZSGTqDM';
-const dingTalkIcon =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDt40mGIoSHWHfgXlaFGyD6XW15wiVtXQ9-wCSYhIrnOkLWwaSQI1YYMv5z69Atnjnp78lZAUfdiCs9q4wZcMvyuzvldohyn-ejGRu5FWunt3YrryVtbeE5NC2lCElseRDlbu4r_9Vd8F5JtU_95mt0bUiKwFmt6Sap2zsLrvt-RWWbej2KSGja4BAtVDAmUFF2eEvJgLNXQrftChxXO-n6uI50eHOHQKnNMcU3f1hn2rKExVP2o5X7E4X-KrgY8OCipTYPYi7AUwM';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -42,7 +37,7 @@ export function LoginPage() {
           <div className="grid h-9 w-9 place-items-center rounded-md bg-blue-800 text-white">
             <Lock size={22} />
           </div>
-          <span className="font-headline text-2xl font-extrabold tracking-tight text-blue-800">Aura 临床管理系统</span>
+          <span className="font-headline text-2xl font-extrabold tracking-tight text-blue-800">Ice 临床管理系统</span>
         </div>
       </div>
       <div className="grid min-h-[calc(100vh-180px)] place-items-center px-5 py-12">
@@ -77,22 +72,9 @@ export function LoginPage() {
             立即登录
             <ArrowRight size={20} />
           </button>
-          <button type="button" className="mt-8 flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-surface-low font-bold text-slate-600">
-            <MessageSquare size={19} />
-            短信验证码登录
-          </button>
-          <div className="my-8 flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-400">
-            <span className="h-px flex-1 bg-outline/60" />
-            第三方登录
-            <span className="h-px flex-1 bg-outline/60" />
-          </div>
-          <div className="flex justify-center gap-8">
-            <img className="h-12 w-12 rounded-xl bg-slate-50 p-3 grayscale" src={wechatIcon} alt="微信登录" />
-            <img className="h-12 w-12 rounded-xl bg-slate-50 p-3 grayscale" src={dingTalkIcon} alt="钉钉登录" />
-          </div>
         </form>
       </div>
-      <footer className="pb-8 text-center text-xs font-semibold text-slate-400">隐私政策 | 服务条款 | 联系支持 | © 2024 Aura 临床管理系统</footer>
+      <footer className="pb-8 text-center text-xs font-semibold text-slate-400">隐私政策 | 服务条款 | 联系支持 | © 2024 Ice 临床管理系统</footer>
     </div>
   );
 }
