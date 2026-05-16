@@ -42,3 +42,47 @@ target/
 # Env / runtime
 .env
 *.local
+# ========================================
+# OMX Runtime
+# ========================================
+
+.omx/state/
+.omx/logs/
+.omx/runtime/
+.omx/workers/
+.omx/tmp/
+.omx/cache/
+
+# Optional
+.omx/plans/
+
+# ========================================
+# Codex Runtime
+# ========================================
+
+.codex/hooks.json
+.codex/session/
+.codex/cache/
+
+# ========================================
+# ECC Runtime Memory
+# ========================================
+
+.ai/ecc/memory/runtime/
+.ai/ecc/cache/
+.ai/ecc/tmp/
+
+# ========================================
+# tmux / worktrees
+# ========================================
+
+.tmux/
+.worktrees/
+.sessions/
+
+# ========================================
+# AI Generated Artifacts
+# ========================================
+
+.ai-generated/
+.tmp-ai/

@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 认证与账户自助接口。
+ * 负责登录、会话查询与密码重置流程。
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -40,6 +44,9 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * 使用邮箱和密码登录，并建立服务端会话。
+     */
     @PostMapping("/login")
     public UserResponse login(
             @Valid @RequestBody LoginRequest request,
@@ -55,6 +62,9 @@ public class AuthController {
         return me(authentication.getName());
     }
 
+    /**
+     * 注销当前会话并清理安全上下文。
+     */
     @PostMapping("/logout")
     public Map<String, String> logout(HttpServletRequest request) {
         if (request.getSession(false) != null) {
@@ -64,16 +74,26 @@ public class AuthController {
         return Map.of("message", "已退出登录");
     }
 
+    /**
+     * 返回当前登录用户的基础信息。
+     */
     @GetMapping("/me")
     public UserResponse me(Principal principal) {
         return me(principal.getName());
     }
 
+    /**
+     * 为指定邮箱生成密码重置令牌。
+     * 当前本地原型环境会直接在响应体中返回令牌。
+     */
     @PostMapping("/password-reset/request")
     public PasswordResetResponse requestReset(@Valid @RequestBody PasswordResetRequest request) {
         return authService.createResetToken(request.email());
     }
 
+    /**
+     * 使用重置令牌完成密码更新。
+     */
     @PostMapping("/password-reset/confirm")
     public Map<String, String> confirmReset(@Valid @RequestBody PasswordResetConfirmRequest request) {
         authService.resetPassword(request.token(), request.newPassword());

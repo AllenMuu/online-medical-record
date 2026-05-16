@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 管理员用户管理接口。
+ * 仅管理员可访问，用于维护系统账号和医生资料。
+ */
 @RestController
 @RequestMapping("/api/admin/users")
 public class AdminUserController {
@@ -24,16 +28,25 @@ public class AdminUserController {
         this.userService = userService;
     }
 
+    /**
+     * 查询全部系统账号。
+     */
     @GetMapping
     public List<UserResponse> list() {
         return userService.listUsers();
     }
 
+    /**
+     * 创建系统账号；医生角色会同步初始化医生扩展资料。
+     */
     @PostMapping
     public UserResponse create(@Valid @RequestBody CreateUserRequest request, Principal principal) {
         return userService.create(request, principal.getName());
     }
 
+    /**
+     * 更新账号基本信息、启用状态或医生扩展资料。
+     */
     @PatchMapping("/{id}")
     public UserResponse update(@PathVariable Long id, @RequestBody UpdateUserRequest request, Principal principal) {
         return userService.update(id, request, principal.getName());

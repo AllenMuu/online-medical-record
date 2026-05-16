@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 病历接口。
+ * 提供病历检索、详情查询和新增病历能力。
+ */
 @RestController
 @RequestMapping("/api/medical-records")
 public class MedicalRecordController {
@@ -26,6 +30,10 @@ public class MedicalRecordController {
         this.medicalRecordService = medicalRecordService;
     }
 
+    /**
+     * 分页检索病历。
+     * 支持按关键字、医生和日期范围组合过滤。
+     */
     @GetMapping
     public Page<MedicalRecordResponse> search(
             @RequestParam(required = false) String query,
@@ -36,11 +44,17 @@ public class MedicalRecordController {
         return medicalRecordService.search(query, doctorId, fromDate, toDate, pageable);
     }
 
+    /**
+     * 查询单条病历详情。
+     */
     @GetMapping("/{id}")
     public MedicalRecordResponse get(@PathVariable Long id) {
         return medicalRecordService.get(id);
     }
 
+    /**
+     * 新增病历与关联用药记录。
+     */
     @PostMapping
     public MedicalRecordResponse create(@Valid @RequestBody CreateMedicalRecordRequest request, Principal principal) {
         return medicalRecordService.create(request, principal.getName());

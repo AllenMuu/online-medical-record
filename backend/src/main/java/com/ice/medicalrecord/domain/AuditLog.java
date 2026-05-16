@@ -8,6 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
+/**
+ * 审计日志实体。
+ * 记录关键业务操作的执行人、动作、目标对象与时间。
+ */
 @Entity
 @Table(name = "audit_logs")
 public class AuditLog {
@@ -15,18 +19,23 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 执行操作的账号邮箱。 */
     @Column(nullable = false, length = 80)
     private String actorEmail;
 
+    /** 审计动作编码，例如 CREATE_PATIENT。 */
     @Column(nullable = false, length = 80)
     private String action;
 
+    /** 被操作实体类型。 */
     @Column(nullable = false, length = 80)
     private String entityType;
 
+    /** 被操作实体主键。 */
     @Column(nullable = false)
     private Long entityId;
 
+    /** 审计日志创建时间。 */
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
 

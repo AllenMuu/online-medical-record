@@ -14,6 +14,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
 
+/**
+ * 系统用户实体。
+ * 表示可登录后台的账号，医生账号可挂接扩展资料。
+ */
 @Entity
 @Table(name = "app_users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
@@ -21,24 +25,31 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 用户姓名。 */
     @Column(nullable = false, length = 120)
     private String name;
 
+    /** 登录邮箱，系统内唯一。 */
     @Column(nullable = false, length = 160)
     private String email;
 
+    /** BCrypt 哈希后的密码。 */
     @Column(nullable = false)
     private String passwordHash;
 
+    /** 用户角色。 */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
 
+    /** 账号是否启用。 */
     @Column(nullable = false)
     private boolean active = true;
 
+    /** 账号创建时间。 */
     private Instant createdAt = Instant.now();
 
+    /** 医生角色对应的扩展资料。 */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private DoctorProfile doctorProfile;
 

@@ -11,6 +11,10 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
 
+/**
+ * 患者实体。
+ * 保存患者基础资料，用于病历录入和检索。
+ */
 @Entity
 @Table(name = "patients")
 public class Patient {
@@ -18,27 +22,35 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 患者姓名。 */
     @Column(nullable = false, length = 80)
     private String name;
 
+    /** 患者性别。 */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Gender gender;
 
+    /** 患者年龄。 */
     @Column(nullable = false)
     private Integer age;
 
+    /** 所属团队或分组。 */
     @Column(nullable = false, length = 100)
     private String team;
 
+    /** 联系电话。 */
     @Column(length = 40)
     private String phone;
 
+    /** 出生日期。 */
     private LocalDate birthDate;
 
+    /** 病史摘要或情况简介。 */
     @Column(length = 1000)
     private String summary;
 
+    /** 档案创建时间。 */
     private Instant createdAt = Instant.now();
 
     public Long getId() {

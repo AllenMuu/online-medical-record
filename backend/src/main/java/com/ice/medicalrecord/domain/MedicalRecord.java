@@ -20,6 +20,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 病历实体。
+ * 表示一次就诊记录，包含患者、医生、诊疗信息和用药清单。
+ */
 @Entity
 @Table(name = "medical_records")
 public class MedicalRecord {
@@ -27,44 +31,57 @@ public class MedicalRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 就诊患者。 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+    /** 接诊医生。 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     private User doctor;
 
+    /** 就诊日期。 */
     @Column(nullable = false)
     private LocalDate visitDate;
 
+    /** 就诊时间。 */
     @Column(nullable = false)
     private LocalTime visitTime;
 
+    /** 主要诊断结论。 */
     @Column(nullable = false, length = 255)
     private String diagnosis;
 
+    /** 主诉信息。 */
     @Column(length = 4000)
     private String complaint;
 
+    /** 检查结果。 */
     @Column(length = 4000)
     private String examination;
 
+    /** 治疗方案。 */
     @Column(length = 4000)
     private String treatment;
 
+    /** 预后说明。 */
     @Column(length = 4000)
     private String prognosis;
 
+    /** 补充备注。 */
     @Column(length = 2000)
     private String notes;
 
+    /** 病历处理状态。 */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RecordStatus status = RecordStatus.COMPLETED;
 
+    /** 病历创建时间。 */
     private Instant createdAt = Instant.now();
 
+    /** 本次病历关联的用药清单。 */
     @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
     private List<Medication> medications = new ArrayList<>();
