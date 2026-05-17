@@ -1,6 +1,10 @@
 spring:
   application:
     name: online-medical-record
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/medical_record}
     username: ${SPRING_DATASOURCE_USERNAME:medical}

@@ -45,9 +45,9 @@ public class DataSeeder implements CommandLineRunner {
             return;
         }
 
-        User admin = createUser("系统管理员", "admin@aura.local", "Admin123!", Role.ADMIN, null, null);
-        User doctor = createUser("张医生", "doctor@aura.local", "Doctor123!", Role.DOCTOR, "主治医师", "心脏内科 A组");
-        User doctorTwo = createUser("王志远", "wang@aura.local", "Doctor123!", Role.DOCTOR, "副主任医师", "内分泌科");
+        User admin = createUser("系统管理员", "admin@aura.local", "Admin123!", Role.ADMIN, null);
+        User doctor = createUser("张医生", "doctor@aura.local", "Doctor123!", Role.DOCTOR, "心脏内科 A组");
+        User doctorTwo = createUser("王志远", "wang@aura.local", "Doctor123!", Role.DOCTOR, "内分泌科");
         userRepository.save(admin);
         userRepository.save(doctor);
         userRepository.save(doctorTwo);
@@ -64,7 +64,7 @@ public class DataSeeder implements CommandLineRunner {
         createRecord(zhao, doctor, LocalDate.of(2023, 11, 19), "急性上呼吸道感染", "布洛芬", "0.2g prn 口服");
     }
 
-    private User createUser(String name, String email, String password, Role role, String title, String department) {
+    private User createUser(String name, String email, String password, Role role, String department) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -73,7 +73,6 @@ public class DataSeeder implements CommandLineRunner {
         if (role == Role.DOCTOR) {
             DoctorProfile profile = new DoctorProfile();
             profile.setUser(user);
-            profile.setTitle(title);
             profile.setDepartment(department);
             profile.setAvatarUrl(DOCTOR_AVATAR);
             user.setDoctorProfile(profile);

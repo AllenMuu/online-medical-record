@@ -17,7 +17,6 @@ public final class UserDtos {
             String email,
             Role role,
             boolean active,
-            String title,
             String department,
             String avatarUrl,
             Instant createdAt,
@@ -29,7 +28,6 @@ public final class UserDtos {
             @Email @NotBlank String email,
             @Size(min = 8) String password,
             @NotNull Role role,
-            String title,
             String department,
             String avatarUrl) {
     }
@@ -37,8 +35,10 @@ public final class UserDtos {
     public record UpdateUserRequest(
             String name,
             Boolean active,
-            String title,
             String department,
             String avatarUrl) {
+    }
+
+    public record UpdateAvatarResponse(String avatarUrl) {
     }
 }

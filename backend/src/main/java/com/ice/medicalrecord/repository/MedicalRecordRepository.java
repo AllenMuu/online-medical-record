@@ -9,4 +9,6 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
     long countByVisitDateBetween(LocalDate fromDate, LocalDate toDate);
 
     boolean existsByPatientId(Long patientId);
+
+    boolean existsByDoctorId(Long doctorId);
 }

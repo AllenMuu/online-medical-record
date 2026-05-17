@@ -1,7 +1,6 @@
 package com.ice.medicalrecord.service;
 
 import com.ice.medicalrecord.api.dto.MedicalRecordDtos.MedicalRecordResponse;
-import com.ice.medicalrecord.api.dto.MedicalRecordDtos.MedicationResponse;
 import com.ice.medicalrecord.api.dto.PatientDtos.PatientResponse;
 import com.ice.medicalrecord.api.dto.UserDtos.UserResponse;
 import com.ice.medicalrecord.domain.DoctorProfile;
@@ -21,9 +20,8 @@ public final class Mapper {
                 user.getEmail(),
                 user.getRole(),
                 user.isActive(),
-                profile == null ? null : profile.getTitle(),
                 profile == null ? null : profile.getDepartment(),
-                profile == null ? null : profile.getAvatarUrl(),
+                user.getAvatarUrl() != null ? user.getAvatarUrl() : profile == null ? null : profile.getAvatarUrl(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
     }
@@ -62,9 +60,6 @@ public final class Mapper {
                 record.getPrognosis(),
                 record.getNotes(),
                 record.getStatus(),
-                record.getMedications().stream()
-                        .map(med -> new MedicationResponse(med.getId(), med.getName(), med.getDosage()))
-                        .toList(),
                 record.getCreatedAt(),
                 record.getUpdatedAt());
     }

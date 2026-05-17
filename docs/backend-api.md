@@ -31,7 +31,6 @@
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `title` | `String` | 职称 |
 | `department` | `String` | 科室 |
 | `avatarUrl` | `String` | 头像地址 |
 
@@ -133,7 +132,6 @@
   "email": "admin@aura.local",
   "role": "ADMIN",
   "active": true,
-  "title": null,
   "department": null,
   "avatarUrl": null
 }
@@ -457,15 +455,14 @@
   "email": "doctor@aura.local",
   "password": "Doctor123!",
   "role": "DOCTOR",
-  "title": "主治医师",
-  "department": "全科门诊",
+  "department": "",
   "avatarUrl": "https://example.com/avatar.png"
 }
 ```
 
 说明：
 
-- 当 `role = DOCTOR` 且未传 `title`、`department` 时，后端默认分别使用 `主治医师`、`全科门诊`
+- 当 `role = DOCTOR` 且未传 `department` 时，后端默认使用空字符串
 
 响应体：`UserResponse`
 
@@ -488,7 +485,6 @@
 {
   "name": "李主任",
   "active": true,
-  "title": "副主任医师",
   "department": "内科门诊",
   "avatarUrl": "https://example.com/avatar-new.png"
 }
@@ -497,7 +493,7 @@
 说明：
 
 - 普通管理员账号只会更新 `name` 和 `active`
-- 医生账号额外支持更新 `title`、`department`、`avatarUrl`
+- 医生账号额外支持更新 `department`、`avatarUrl`
 
 响应体：`UserResponse`
 

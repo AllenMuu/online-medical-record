@@ -3,7 +3,6 @@ package com.ice.medicalrecord.service;
 import com.ice.medicalrecord.api.dto.MedicalRecordDtos.MedicalRecordResponse;
 import com.ice.medicalrecord.api.dto.MedicalRecordDtos.UpsertMedicalRecordRequest;
 import com.ice.medicalrecord.domain.MedicalRecord;
-import com.ice.medicalrecord.domain.Medication;
 import com.ice.medicalrecord.domain.Patient;
 import com.ice.medicalrecord.domain.RecordStatus;
 import com.ice.medicalrecord.domain.User;
@@ -101,6 +100,14 @@ public class MedicalRecordService {
         return Mapper.medicalRecord(saved);
     }
 
+    @Transactional
+    public void delete(Long id, String actorEmail) {
+        MedicalRecord record = recordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("病历不存在"));
+        recordRepository.delete(record);
+        auditService.log(actorEmail, "DELETE_MEDICAL_RECORD", "MedicalRecord", id);
+    }
+
     private void applyRequest(MedicalRecord record, UpsertMedicalRecordRequest request) {
         Patient patient = patientRepository.findById(request.patientId())
                 .orElseThrow(() -> new EntityNotFoundException("患者不存在"));
@@ -118,18 +125,5 @@ public class MedicalRecordService {
         record.setPrognosis(request.prognosis());
         record.setNotes(request.notes());
         record.setStatus(request.status() == null ? RecordStatus.COMPLETED : request.status());
-
-        record.getMedications().clear();
-        if (request.medications() == null) {
-            return;
-        }
-
-        request.medications().forEach(item -> {
-            Medication medication = new Medication();
-            medication.setMedicalRecord(record);
-            medication.setName(item.name());
-            medication.setDosage(item.dosage());
-            record.getMedications().add(medication);
-        });
     }
 }

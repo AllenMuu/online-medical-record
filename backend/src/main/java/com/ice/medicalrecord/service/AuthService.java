@@ -52,4 +52,17 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         resetToken.setUsed(true);
     }
+
+    @Transactional
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new IllegalArgumentException("账号不存在"));
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new IllegalArgumentException("当前密码不正确");
+        }
+        if (currentPassword.equals(newPassword)) {
+            throw new IllegalArgumentException("新密码不能与当前密码相同");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+    }
 }

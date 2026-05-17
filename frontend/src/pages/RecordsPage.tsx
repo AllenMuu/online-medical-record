@@ -1,4 +1,4 @@
-import { Download, Eye, Filter, Pencil, Plus } from 'lucide-react';
+import { Eye, Filter, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
@@ -14,6 +14,7 @@ export function RecordsPage() {
   const [doctors, setDoctors] = useState<User[]>([]);
   const [query, setQuery] = useState('');
   const [doctorId, setDoctorId] = useState('');
+  const [error, setError] = useState('');
 
   const params = useMemo(() => {
     const next = new URLSearchParams({ page: '0', size: '10' });
@@ -29,14 +30,26 @@ export function RecordsPage() {
     void load();
   }, [load]);
 
+  const handleDelete = async (record: MedicalRecord) => {
+    if (!window.confirm(`确认删除 ${record.patientName} 的这条病历吗？`)) {
+      return;
+    }
+    setError('');
+    try {
+      await api.deleteRecord(record.id);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '删除失败');
+    }
+  };
+
   return (
     <>
       <PageHeader
         title="历史病历列表"
-        description="查看、检索及导出系统内所有既往临床诊断记录。"
+        description="查看及检索系统内所有既往临床诊断记录。"
         action={
           <div className="flex gap-4">
-            <button className="btn-secondary"><Download size={19} />导出报表</button>
             <button className="btn-primary" onClick={() => navigate('/records/new')}><Plus size={21} />新建记录</button>
           </div>
         }
@@ -46,6 +59,7 @@ export function RecordsPage() {
         <label><span className="form-label">医生筛选</span><select className="input-field" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}><option value="">全部医生</option>{doctors.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.name}</option>)}</select></label>
         <button className="btn-primary self-end justify-center" onClick={() => void load()}><Filter size={21} />应用筛选</button>
       </div>
+      {error && <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
       <div className="table-card">
         <div className="table-grid grid-cols-[1.1fr_1.2fr_1.6fr_1fr_1.1fr_1.1fr_0.8fr_0.8fr] bg-surface-low font-bold text-muted">
           <div>就诊日期</div><div>姓名</div><div>诊断</div><div>医生</div><div>创建时间</div><div>更新时间</div><div>状态</div><div className="text-right">操作</div>
@@ -75,6 +89,14 @@ export function RecordsPage() {
                 onClick={() => navigate(`/records/${record.id}/edit`)}
               >
                 <Pencil size={21} />
+              </button>
+              <button
+                type="button"
+                className="text-slate-400 transition hover:text-red-600"
+                aria-label={`删除病历 ${record.patientName}`}
+                onClick={() => void handleDelete(record)}
+              >
+                <Trash2 size={21} />
               </button>
             </div>
           </div>

@@ -19,4 +19,9 @@ public final class AuthDtos {
 
     public record PasswordResetConfirmRequest(@NotBlank String token, @Size(min = 8) String newPassword) {
     }
+
+    public record ChangePasswordRequest(
+            @NotBlank String currentPassword,
+            @NotBlank @Size(min = 8) String newPassword) {
+    }
 }

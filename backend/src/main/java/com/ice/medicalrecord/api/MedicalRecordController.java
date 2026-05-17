@@ -7,8 +7,10 @@ import com.ice.medicalrecord.service.MedicalRecordService;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +56,7 @@ public class MedicalRecordController {
     }
 
     /**
-     * 新增病历与关联用药记录。
+     * 新增病历。
      */
     @PostMapping
     public MedicalRecordResponse create(@Valid @RequestBody UpsertMedicalRecordRequest request, Principal principal) {
@@ -62,7 +64,7 @@ public class MedicalRecordController {
     }
 
     /**
-     * 更新病历与关联用药记录。
+     * 更新病历。
      */
     @PatchMapping("/{id}")
     public MedicalRecordResponse update(
@@ -70,5 +72,14 @@ public class MedicalRecordController {
             @Valid @RequestBody UpsertMedicalRecordRequest request,
             Principal principal) {
         return medicalRecordService.update(id, request, principal.getName());
+    }
+
+    /**
+     * 删除指定病历。
+     */
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(@PathVariable Long id, Principal principal) {
+        medicalRecordService.delete(id, principal.getName());
+        return Map.of("message", "病历已删除");
     }
 }

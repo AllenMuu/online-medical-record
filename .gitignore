@@ -42,6 +42,10 @@ target/
 # Env / runtime
 .env
 *.local
+.ai/
+.codex/
+backend/uploads/
+backend/backend/uploads/
 # ========================================
 # OMX Runtime
 # ========================================

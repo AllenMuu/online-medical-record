@@ -26,7 +26,6 @@ function createEmptyForm(doctorId = 0): RecordPayload {
     prognosis: '',
     notes: '',
     status: 'COMPLETED',
-    medications: [],
   };
 }
 
@@ -43,10 +42,6 @@ function toRecordPayload(record: MedicalRecord): RecordPayload {
     prognosis: record.prognosis ?? '',
     notes: record.notes ?? '',
     status: record.status,
-    medications: record.medications.map((medication) => ({
-      name: medication.name,
-      dosage: medication.dosage,
-    })),
   };
 }
 
@@ -269,7 +264,7 @@ export function NewRecordPage() {
             </div>
           )}
         </div>
-        <label><span className="form-label required">医生</span><select className="input-field" value={form.doctorId} onChange={(e) => setForm({ ...form, doctorId: Number(e.target.value) })}><option value={0} disabled>请选择医生</option>{doctorOptions.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.name}{doctor.title ? ` (${doctor.title})` : ''}</option>)}</select></label>
+        <label><span className="form-label required">医生</span><select className="input-field" value={form.doctorId} onChange={(e) => setForm({ ...form, doctorId: Number(e.target.value) })}><option value={0} disabled>请选择医生</option>{doctorOptions.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.name}</option>)}</select></label>
       </div>
 
       <div className="grid gap-8 xl:grid-cols-[1fr_360px]">

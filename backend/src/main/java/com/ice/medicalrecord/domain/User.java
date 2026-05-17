@@ -45,6 +45,10 @@ public class User extends AuditableEntity {
     @Column(nullable = false)
     private boolean active = true;
 
+    /** 当前用户头像地址。 */
+    @Column(length = 1000)
+    private String avatarUrl;
+
     /** 医生角色对应的扩展资料。 */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private DoctorProfile doctorProfile;
@@ -95,6 +99,14 @@ public class User extends AuditableEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public DoctorProfile getDoctorProfile() {

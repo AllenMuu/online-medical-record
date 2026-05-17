@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 
 /**
  * 医生扩展资料实体。
- * 存储医生账号的职称、科室和头像等信息。
+ * 存储医生账号的科室和头像等信息。
  */
 @Entity
 @Table(name = "doctor_profiles")
@@ -25,10 +25,6 @@ public class DoctorProfile extends AuditableEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    /** 医生职称。 */
-    @Column(nullable = false, length = 80)
-    private String title;
 
     /** 医生所属科室。 */
     @Column(nullable = false, length = 80)
@@ -52,14 +48,6 @@ public class DoctorProfile extends AuditableEntity {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDepartment() {

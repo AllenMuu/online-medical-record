@@ -8,7 +8,6 @@ export interface User {
   email: string;
   role: Role;
   active: boolean;
-  title?: string;
   department?: string;
   avatarUrl?: string;
   createdAt: string;
@@ -28,12 +27,6 @@ export interface Patient {
   updatedAt: string;
 }
 
-export interface Medication {
-  id?: number;
-  name: string;
-  dosage: string;
-}
-
 export interface MedicalRecord {
   id: number;
   patientId: number;
@@ -51,7 +44,6 @@ export interface MedicalRecord {
   prognosis?: string;
   notes?: string;
   status: RecordStatus;
-  medications: Medication[];
   createdAt: string;
   updatedAt: string;
 }

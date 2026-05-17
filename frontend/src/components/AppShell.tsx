@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, FileText, Gauge, LogOut, Plus, Settings, Shield, Users } from 'lucide-react';
+import { CalendarDays, FileText, Gauge, LogOut, Plus, Settings, Shield, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
@@ -70,10 +70,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="md:pl-[280px]">
         <header className="sticky top-0 z-10 flex h-20 items-center justify-end border-b border-outline/50 bg-white/75 px-5 backdrop-blur md:px-10">
           <div className="flex items-center gap-5">
-            <span className="relative inline-flex text-slate-600">
-              <Bell size={24} />
-              <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full bg-red-600" />
-            </span>
             <button
               className="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:block"
               aria-label="退出登录"
@@ -89,7 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <div className="text-right">
                 <div className="font-headline text-sm font-extrabold">{user?.name}</div>
-                <div className="text-xs text-muted">{user?.title || (user?.role === 'ADMIN' ? '系统管理员' : '临床医生')}</div>
+                <div className="text-xs text-muted">{user?.role === 'ADMIN' ? '系统管理员' : user?.department || '临床医生'}</div>
               </div>
               <img
                 className="h-11 w-11 rounded-2xl object-cover ring-2 ring-blue-100"
