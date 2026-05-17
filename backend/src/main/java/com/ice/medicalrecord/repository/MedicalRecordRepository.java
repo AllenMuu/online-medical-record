@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long>, JpaSpecificationExecutor<MedicalRecord> {
     long countByVisitDateBetween(LocalDate fromDate, LocalDate toDate);
+
+    boolean existsByPatientId(Long patientId);
 }

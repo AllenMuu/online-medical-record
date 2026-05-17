@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { PageHeader } from '../components/PageHeader';
+import { formatDateTime, genderLabel, recordStatusLabel } from '../format';
 import type { MedicalRecord, Page, User } from '../types';
 
 const emptyPage: Page<MedicalRecord> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 };
@@ -46,17 +47,36 @@ export function RecordsPage() {
         <button className="btn-primary self-end justify-center" onClick={() => void load()}><Filter size={21} />应用筛选</button>
       </div>
       <div className="table-card">
-        <div className="table-grid grid-cols-[1.2fr_1.4fr_2fr_1.2fr_1fr_1fr] bg-surface-low font-bold text-muted">
-          <div>就诊日期</div><div>姓名</div><div>诊断</div><div>医生</div><div>状态</div><div className="text-right">操作</div>
+        <div className="table-grid grid-cols-[1.1fr_1.2fr_1.6fr_1fr_1.1fr_1.1fr_0.8fr_0.8fr] bg-surface-low font-bold text-muted">
+          <div>就诊日期</div><div>姓名</div><div>诊断</div><div>医生</div><div>创建时间</div><div>更新时间</div><div>状态</div><div className="text-right">操作</div>
         </div>
         {records.content.map((record) => (
-          <div key={record.id} className="table-grid grid-cols-[1.2fr_1.4fr_2fr_1.2fr_1fr_1fr]">
+          <div key={record.id} className="table-grid grid-cols-[1.1fr_1.2fr_1.6fr_1fr_1.1fr_1.1fr_0.8fr_0.8fr]">
             <div><div className="font-semibold">{record.visitDate}</div><div className="text-xs text-muted">{record.visitTime}</div></div>
-            <div><div className="font-headline font-extrabold">{record.patientName}</div><div className="text-xs text-muted">{record.patientGender === 'FEMALE' ? '女' : '男'} · {record.patientAge}岁</div></div>
+            <div><div className="font-headline font-extrabold">{record.patientName}</div><div className="text-xs text-muted">{genderLabel(record.patientGender)} · {record.patientAge}岁</div></div>
             <div>{record.diagnosis}</div>
             <div>{record.doctorName}</div>
-            <div><span className="badge">{record.status === 'COMPLETED' ? '已完成' : '进行中'}</span></div>
-            <div className="flex justify-end gap-5 text-blue-300"><Eye size={21} /><Pencil size={21} /></div>
+            <div className="text-xs font-semibold text-muted">{formatDateTime(record.createdAt)}</div>
+            <div className="text-xs font-semibold text-muted">{formatDateTime(record.updatedAt)}</div>
+            <div><span className="badge">{recordStatusLabel(record.status)}</span></div>
+            <div className="flex justify-end gap-4 text-slate-400">
+              <button
+                type="button"
+                className="text-slate-400 transition hover:text-blue-600"
+                aria-label={`查看病历 ${record.patientName}`}
+                onClick={() => navigate(`/records/${record.id}`)}
+              >
+                <Eye size={21} />
+              </button>
+              <button
+                type="button"
+                className="text-slate-400 transition hover:text-blue-600"
+                aria-label={`编辑病历 ${record.patientName}`}
+                onClick={() => navigate(`/records/${record.id}/edit`)}
+              >
+                <Pencil size={21} />
+              </button>
+            </div>
           </div>
         ))}
         <div className="flex items-center justify-between bg-surface-low px-8 py-5 text-sm font-semibold text-muted">

@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { NewRecordPage } from './pages/NewRecordPage';
 import { PatientsPage } from './pages/PatientsPage';
+import { RecordDetailPage } from './pages/RecordDetailPage';
 import { RecordsPage } from './pages/RecordsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SimplePage } from './pages/SimplePage';
@@ -40,6 +41,8 @@ export default function App() {
         <Route path="/patients" element={<Protected><PatientsPage /></Protected>} />
         <Route path="/records" element={<Protected><RecordsPage /></Protected>} />
         <Route path="/records/new" element={<Protected><NewRecordPage /></Protected>} />
+        <Route path="/records/:recordId" element={<Protected><RecordDetailPage /></Protected>} />
+        <Route path="/records/:recordId/edit" element={<Protected><NewRecordPage /></Protected>} />
         <Route path="/schedule" element={<Protected><SimplePage title="排班计划" description="排班视图已预留，后续可接入医生日程和班次管理。" /></Protected>} />
         <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
         <Route path="/admin/users" element={<Protected><UsersPage /></Protected>} />

@@ -70,12 +70,30 @@ export const api = {
     request<User>('/api/admin/users', { method: 'POST', body: JSON.stringify(payload) }),
   updateUser: (id: number, payload: Partial<CreateUserPayload> & { active?: boolean }) =>
     request<User>(`/api/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
-  patients: (query = '', page = 0, size = 10) =>
-    request<Page<Patient>>(`/api/patients?query=${encodeURIComponent(query)}&page=${page}&size=${size}`),
+  patients: (nameQuery = '', teamQuery = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    });
+    if (nameQuery.trim()) {
+      params.set('nameQuery', nameQuery.trim());
+    }
+    if (teamQuery.trim()) {
+      params.set('teamQuery', teamQuery.trim());
+    }
+    return request<Page<Patient>>(`/api/patients?${params.toString()}`);
+  },
   createPatient: (payload: PatientPayload) =>
     request<Patient>('/api/patients', { method: 'POST', body: JSON.stringify(payload) }),
+  updatePatient: (id: number, payload: PatientPayload) =>
+    request<Patient>(`/api/patients/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  deletePatient: (id: number) =>
+    request<{ message: string }>(`/api/patients/${id}`, { method: 'DELETE' }),
   records: (params: URLSearchParams) => request<Page<MedicalRecord>>(`/api/medical-records?${params.toString()}`),
+  record: (id: number) => request<MedicalRecord>(`/api/medical-records/${id}`),
   createRecord: (payload: RecordPayload) =>
     request<MedicalRecord>('/api/medical-records', { method: 'POST', body: JSON.stringify(payload) }),
+  updateRecord: (id: number, payload: RecordPayload) =>
+    request<MedicalRecord>(`/api/medical-records/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
   dashboard: () => request<DashboardSummary>('/api/dashboard/summary'),
 };

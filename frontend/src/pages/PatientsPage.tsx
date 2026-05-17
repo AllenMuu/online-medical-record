@@ -1,7 +1,8 @@
 import { Pencil, Search, Trash2, UserPlus } from 'lucide-react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { type SubmitEvent, useCallback, useEffect, useState } from 'react';
 import { api, type PatientPayload } from '../api';
 import { PageHeader } from '../components/PageHeader';
+import { formatDateTime, genderLabel } from '../format';
 import type { Gender, Page, Patient } from '../types';
 
 const emptyPage: Page<Patient> = { content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 };
@@ -85,24 +86,28 @@ export function PatientsPage() {
       {error && <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
 
       <div className="table-card">
-        <div className="table-grid grid-cols-[2fr_1fr_1fr_2fr_1fr] bg-surface-low font-bold text-muted">
+        <div className="table-grid grid-cols-[1.7fr_0.8fr_0.7fr_1.4fr_1.2fr_1.2fr_0.8fr] bg-surface-low font-bold text-muted">
           <div>姓名</div>
           <div>性别</div>
           <div>年龄</div>
           <div>所属队伍</div>
+          <div>创建时间</div>
+          <div>更新时间</div>
           <div className="text-right">操作</div>
         </div>
         {page.content.map((patient) => (
-          <div key={patient.id} className="table-grid grid-cols-[2fr_1fr_1fr_2fr_1fr]">
+          <div key={patient.id} className="table-grid grid-cols-[1.7fr_0.8fr_0.7fr_1.4fr_1.2fr_1.2fr_0.8fr]">
             <div className="flex items-center gap-4">
               <div className={`avatar-chip ${patient.gender === 'FEMALE' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-700'}`}>
                 {patient.name.slice(0, 1)}
               </div>
               <div className="font-headline font-extrabold">{patient.name}</div>
             </div>
-            <div>{patient.gender === 'FEMALE' ? '女' : patient.gender === 'MALE' ? '男' : '其他'}</div>
+            <div>{genderLabel(patient.gender)}</div>
             <div>{patient.age}</div>
             <div><span className="badge">{patient.team}</span></div>
+            <div className="text-xs font-semibold text-muted">{formatDateTime(patient.createdAt)}</div>
+            <div className="text-xs font-semibold text-muted">{formatDateTime(patient.updatedAt)}</div>
             <div className="flex justify-end gap-4 text-slate-400">
               <button
                 type="button"
@@ -156,7 +161,7 @@ function PatientModal({ patient, onClose, onSaved }: { patient?: Patient; onClos
   const [error, setError] = useState('');
   const isEdit = Boolean(patient);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     const payload: PatientPayload = {

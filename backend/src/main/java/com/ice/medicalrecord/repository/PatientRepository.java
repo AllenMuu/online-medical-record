@@ -6,5 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-    Page<Patient> findByNameContainingIgnoreCaseOrTeamContainingIgnoreCase(String name, String team, Pageable pageable);
+    boolean existsByNameIgnoreCaseAndTeamIgnoreCase(String name, String team);
+
+    boolean existsByNameIgnoreCaseAndTeamIgnoreCaseAndIdNot(String name, String team, Long id);
+
+    Page<Patient> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Patient> findByTeamContainingIgnoreCase(String team, Pageable pageable);
+
+    Page<Patient> findByNameContainingIgnoreCaseAndTeamContainingIgnoreCase(
+            String name, String team, Pageable pageable);
 }

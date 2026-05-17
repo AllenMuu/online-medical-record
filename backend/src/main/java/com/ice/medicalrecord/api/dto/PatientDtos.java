@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import java.time.LocalDate;
 
 public final class PatientDtos {
@@ -19,7 +20,9 @@ public final class PatientDtos {
             String team,
             String phone,
             LocalDate birthDate,
-            String summary) {
+            String summary,
+            Instant createdAt,
+            Instant updatedAt) {
     }
 
     public record UpsertPatientRequest(

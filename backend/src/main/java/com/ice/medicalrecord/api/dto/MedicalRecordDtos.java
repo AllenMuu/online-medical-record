@@ -4,6 +4,7 @@ import com.ice.medicalrecord.domain.RecordStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,7 +19,7 @@ public final class MedicalRecordDtos {
     public record MedicationResponse(Long id, String name, String dosage) {
     }
 
-    public record CreateMedicalRecordRequest(
+    public record UpsertMedicalRecordRequest(
             @NotNull Long patientId,
             @NotNull Long doctorId,
             @NotNull LocalDate visitDate,
@@ -50,6 +51,8 @@ public final class MedicalRecordDtos {
             String prognosis,
             String notes,
             RecordStatus status,
-            List<MedicationResponse> medications) {
+            List<MedicationResponse> medications,
+            Instant createdAt,
+            Instant updatedAt) {
     }
 }

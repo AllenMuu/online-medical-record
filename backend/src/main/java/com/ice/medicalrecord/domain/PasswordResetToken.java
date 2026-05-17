@@ -16,7 +16,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "password_reset_tokens")
-public class PasswordResetToken {
+public class PasswordResetToken extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

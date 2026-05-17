@@ -14,7 +14,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "medical_records")
-public class MedicalRecord {
+public class MedicalRecord extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -77,9 +76,6 @@ public class MedicalRecord {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RecordStatus status = RecordStatus.COMPLETED;
-
-    /** 病历创建时间。 */
-    private Instant createdAt = Instant.now();
 
     /** 本次病历关联的用药清单。 */
     @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -180,14 +176,6 @@ public class MedicalRecord {
 
     public void setStatus(RecordStatus status) {
         this.status = status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 
     public List<Medication> getMedications() {

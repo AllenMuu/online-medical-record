@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.Instant;
 
 /**
  * 系统用户实体。
@@ -20,7 +19,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "app_users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-public class User {
+public class User extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,9 +44,6 @@ public class User {
     /** 账号是否启用。 */
     @Column(nullable = false)
     private boolean active = true;
-
-    /** 账号创建时间。 */
-    private Instant createdAt = Instant.now();
 
     /** 医生角色对应的扩展资料。 */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -99,14 +95,6 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 
     public DoctorProfile getDoctorProfile() {

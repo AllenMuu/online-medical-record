@@ -2,11 +2,13 @@ package com.ice.medicalrecord.api;
 
 import com.ice.medicalrecord.api.dto.PatientDtos.PatientResponse;
 import com.ice.medicalrecord.api.dto.PatientDtos.UpsertPatientRequest;
+import com.ice.medicalrecord.api.dto.PageResponse;
 import com.ice.medicalrecord.service.PatientService;
 import jakarta.validation.Valid;
 import java.security.Principal;
-import org.springframework.data.domain.Page;
+import java.util.Map;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,11 +33,14 @@ public class PatientController {
 
     /**
      * 分页查询患者。
-     * query 为空时返回全部，否则按姓名或团队模糊检索。
+     * 查询条件为空时返回全部，否则按姓名和所属队伍分别模糊检索。
      */
     @GetMapping
-    public Page<PatientResponse> list(@RequestParam(required = false) String query, Pageable pageable) {
-        return patientService.list(query, pageable);
+    public PageResponse<PatientResponse> list(
+            @RequestParam(required = false) String nameQuery,
+            @RequestParam(required = false) String teamQuery,
+            Pageable pageable) {
+        return PageResponse.from(patientService.list(nameQuery, teamQuery, pageable));
     }
 
     /**
@@ -55,5 +60,14 @@ public class PatientController {
             @Valid @RequestBody UpsertPatientRequest request,
             Principal principal) {
         return patientService.update(id, request, principal.getName());
+    }
+
+    /**
+     * 删除指定患者档案。
+     */
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(@PathVariable Long id, Principal principal) {
+        patientService.delete(id, principal.getName());
+        return Map.of("message", "患者已删除");
     }
 }

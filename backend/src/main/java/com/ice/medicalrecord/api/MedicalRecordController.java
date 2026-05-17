@@ -1,15 +1,16 @@
 package com.ice.medicalrecord.api;
 
-import com.ice.medicalrecord.api.dto.MedicalRecordDtos.CreateMedicalRecordRequest;
 import com.ice.medicalrecord.api.dto.MedicalRecordDtos.MedicalRecordResponse;
+import com.ice.medicalrecord.api.dto.MedicalRecordDtos.UpsertMedicalRecordRequest;
+import com.ice.medicalrecord.api.dto.PageResponse;
 import com.ice.medicalrecord.service.MedicalRecordService;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,13 +36,13 @@ public class MedicalRecordController {
      * 支持按关键字、医生和日期范围组合过滤。
      */
     @GetMapping
-    public Page<MedicalRecordResponse> search(
+    public PageResponse<MedicalRecordResponse> search(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             Pageable pageable) {
-        return medicalRecordService.search(query, doctorId, fromDate, toDate, pageable);
+        return PageResponse.from(medicalRecordService.search(query, doctorId, fromDate, toDate, pageable));
     }
 
     /**
@@ -56,7 +57,18 @@ public class MedicalRecordController {
      * 新增病历与关联用药记录。
      */
     @PostMapping
-    public MedicalRecordResponse create(@Valid @RequestBody CreateMedicalRecordRequest request, Principal principal) {
+    public MedicalRecordResponse create(@Valid @RequestBody UpsertMedicalRecordRequest request, Principal principal) {
         return medicalRecordService.create(request, principal.getName());
+    }
+
+    /**
+     * 更新病历与关联用药记录。
+     */
+    @PatchMapping("/{id}")
+    public MedicalRecordResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpsertMedicalRecordRequest request,
+            Principal principal) {
+        return medicalRecordService.update(id, request, principal.getName());
     }
 }

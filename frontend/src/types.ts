@@ -11,6 +11,8 @@ export interface User {
   title?: string;
   department?: string;
   avatarUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Patient {
@@ -22,6 +24,8 @@ export interface Patient {
   phone?: string;
   birthDate?: string;
   summary?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Medication {
@@ -48,6 +52,8 @@ export interface MedicalRecord {
   notes?: string;
   status: RecordStatus;
   medications: Medication[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Page<T> {

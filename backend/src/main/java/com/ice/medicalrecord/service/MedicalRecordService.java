@@ -1,7 +1,7 @@
 package com.ice.medicalrecord.service;
 
-import com.ice.medicalrecord.api.dto.MedicalRecordDtos.CreateMedicalRecordRequest;
 import com.ice.medicalrecord.api.dto.MedicalRecordDtos.MedicalRecordResponse;
+import com.ice.medicalrecord.api.dto.MedicalRecordDtos.UpsertMedicalRecordRequest;
 import com.ice.medicalrecord.domain.MedicalRecord;
 import com.ice.medicalrecord.domain.Medication;
 import com.ice.medicalrecord.domain.Patient;
@@ -83,13 +83,30 @@ public class MedicalRecordService {
     }
 
     @Transactional
-    public MedicalRecordResponse create(CreateMedicalRecordRequest request, String actorEmail) {
+    public MedicalRecordResponse create(UpsertMedicalRecordRequest request, String actorEmail) {
+        MedicalRecord record = new MedicalRecord();
+        applyRequest(record, request);
+        MedicalRecord saved = recordRepository.save(record);
+        auditService.log(actorEmail, "CREATE_MEDICAL_RECORD", "MedicalRecord", saved.getId());
+        return Mapper.medicalRecord(saved);
+    }
+
+    @Transactional
+    public MedicalRecordResponse update(Long id, UpsertMedicalRecordRequest request, String actorEmail) {
+        MedicalRecord record = recordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("病历不存在"));
+        applyRequest(record, request);
+        MedicalRecord saved = recordRepository.save(record);
+        auditService.log(actorEmail, "UPDATE_MEDICAL_RECORD", "MedicalRecord", saved.getId());
+        return Mapper.medicalRecord(saved);
+    }
+
+    private void applyRequest(MedicalRecord record, UpsertMedicalRecordRequest request) {
         Patient patient = patientRepository.findById(request.patientId())
                 .orElseThrow(() -> new EntityNotFoundException("患者不存在"));
         User doctor = userRepository.findById(request.doctorId())
                 .orElseThrow(() -> new EntityNotFoundException("医生不存在"));
 
-        MedicalRecord record = new MedicalRecord();
         record.setPatient(patient);
         record.setDoctor(doctor);
         record.setVisitDate(request.visitDate());
@@ -101,17 +118,18 @@ public class MedicalRecordService {
         record.setPrognosis(request.prognosis());
         record.setNotes(request.notes());
         record.setStatus(request.status() == null ? RecordStatus.COMPLETED : request.status());
-        if (request.medications() != null) {
-            request.medications().forEach(item -> {
-                Medication medication = new Medication();
-                medication.setMedicalRecord(record);
-                medication.setName(item.name());
-                medication.setDosage(item.dosage());
-                record.getMedications().add(medication);
-            });
+
+        record.getMedications().clear();
+        if (request.medications() == null) {
+            return;
         }
-        MedicalRecord saved = recordRepository.save(record);
-        auditService.log(actorEmail, "CREATE_MEDICAL_RECORD", "MedicalRecord", saved.getId());
-        return Mapper.medicalRecord(saved);
+
+        request.medications().forEach(item -> {
+            Medication medication = new Medication();
+            medication.setMedicalRecord(record);
+            medication.setName(item.name());
+            medication.setDosage(item.dosage());
+            record.getMedications().add(medication);
+        });
     }
 }

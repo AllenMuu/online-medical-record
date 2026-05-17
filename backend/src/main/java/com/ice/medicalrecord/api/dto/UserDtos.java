@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.Instant;
 
 public final class UserDtos {
     private UserDtos() {
@@ -18,7 +19,9 @@ public final class UserDtos {
             boolean active,
             String title,
             String department,
-            String avatarUrl) {
+            String avatarUrl,
+            Instant createdAt,
+            Instant updatedAt) {
     }
 
     public record CreateUserRequest(

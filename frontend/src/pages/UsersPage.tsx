@@ -1,7 +1,8 @@
 import { Plus, ShieldCheck } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { api, type CreateUserPayload } from '../api';
 import { PageHeader } from '../components/PageHeader';
+import { formatDateTime } from '../format';
 import type { User } from '../types';
 
 export function UsersPage() {
@@ -15,7 +16,7 @@ export function UsersPage() {
     void load();
   }, []);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     try {
@@ -42,13 +43,15 @@ export function UsersPage() {
           <button className="btn-primary mt-4 w-full justify-center"><Plus size={19} />创建医生账号</button>
         </form>
         <div className="table-card">
-          <div className="table-grid grid-cols-[1.4fr_1.8fr_1fr_1fr] bg-surface-low font-bold text-muted"><div>姓名</div><div>邮箱</div><div>角色</div><div>状态</div></div>
+          <div className="table-grid grid-cols-[1.2fr_1.8fr_0.9fr_0.8fr_1.1fr_1.1fr] bg-surface-low font-bold text-muted"><div>姓名</div><div>邮箱</div><div>角色</div><div>状态</div><div>创建时间</div><div>更新时间</div></div>
           {users.map((user) => (
-            <div className="table-grid grid-cols-[1.4fr_1.8fr_1fr_1fr]" key={user.id}>
+            <div className="table-grid grid-cols-[1.2fr_1.8fr_0.9fr_0.8fr_1.1fr_1.1fr]" key={user.id}>
               <div className="font-headline font-extrabold">{user.name}</div>
               <div>{user.email}</div>
               <div>{user.role === 'ADMIN' ? '管理员' : user.title || '医生'}</div>
               <div><span className="badge">{user.active ? '启用' : '停用'}</span></div>
+              <div className="text-xs font-semibold text-muted">{formatDateTime(user.createdAt)}</div>
+              <div className="text-xs font-semibold text-muted">{formatDateTime(user.updatedAt)}</div>
             </div>
           ))}
         </div>

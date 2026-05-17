@@ -1,5 +1,5 @@
 import { ArrowRight, Eye, Lock, UserRound } from 'lucide-react';
-import { FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { api } from '../api';
 
@@ -10,7 +10,7 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [resetToken, setResetToken] = useState('');
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     try {

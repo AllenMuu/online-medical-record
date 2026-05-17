@@ -1,20 +1,24 @@
-import { Calendar, Plus, Save } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Eye, Save } from 'lucide-react';
+import { type SubmitEvent, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api, type RecordPayload } from '../api';
+import { useAuth } from '../AuthContext';
 import { PageHeader } from '../components/PageHeader';
-import type { Patient, User } from '../types';
+import { VisitDateTimeField } from '../components/VisitDateTimeField';
+import type { MedicalRecord, Patient, User } from '../types';
 
-export function NewRecordPage() {
-  const navigate = useNavigate();
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [doctors, setDoctors] = useState<User[]>([]);
-  const [error, setError] = useState('');
-  const [form, setForm] = useState<RecordPayload>({
+function getTodayDate() {
+  const now = new Date();
+  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
+
+function createEmptyForm(doctorId = 0): RecordPayload {
+  return {
     patientId: 0,
-    doctorId: 0,
-    visitDate: '2023-11-20',
-    visitTime: '10:30',
+    doctorId,
+    visitDate: getTodayDate(),
+    visitTime: '10:30:00',
     diagnosis: '',
     complaint: '',
     examination: '',
@@ -22,43 +26,250 @@ export function NewRecordPage() {
     prognosis: '',
     notes: '',
     status: 'COMPLETED',
-    medications: [{ name: '阿莫西林', dosage: '0.5g tid 口服' }],
-  });
+    medications: [],
+  };
+}
+
+function toRecordPayload(record: MedicalRecord): RecordPayload {
+  return {
+    patientId: record.patientId,
+    doctorId: record.doctorId,
+    visitDate: record.visitDate,
+    visitTime: record.visitTime,
+    diagnosis: record.diagnosis,
+    complaint: record.complaint ?? '',
+    examination: record.examination ?? '',
+    treatment: record.treatment ?? '',
+    prognosis: record.prognosis ?? '',
+    notes: record.notes ?? '',
+    status: record.status,
+    medications: record.medications.map((medication) => ({
+      name: medication.name,
+      dosage: medication.dosage,
+    })),
+  };
+}
+
+export function NewRecordPage() {
+  const navigate = useNavigate();
+  const { recordId } = useParams();
+  const { user } = useAuth();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<User[]>([]);
+  const [patientQuery, setPatientQuery] = useState('');
+  const [patientDropdownOpen, setPatientDropdownOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [loadingRecord, setLoadingRecord] = useState(false);
+  const [loadedRecord, setLoadedRecord] = useState<MedicalRecord | null>(null);
+  const [form, setForm] = useState<RecordPayload>(() => createEmptyForm());
+  const numericRecordId = recordId ? Number(recordId) : null;
+  const isEdit = recordId !== undefined;
+  const isRecordIdValid = numericRecordId !== null && Number.isFinite(numericRecordId);
 
   useEffect(() => {
-    void Promise.all([api.patients('', 0, 100), api.doctors()]).then(([patientPage, doctorList]) => {
-      setPatients(patientPage.content);
-      setDoctors(doctorList);
-      setForm((current) => ({
-        ...current,
-        patientId: patientPage.content[0]?.id ?? 0,
-        doctorId: doctorList[0]?.id ?? 0,
-      }));
-    });
+    let cancelled = false;
+    void api.doctors()
+      .then((doctorList) => {
+        if (!cancelled) {
+          setDoctors(doctorList);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : '医生列表加载失败');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const submit = async (event: FormEvent) => {
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void api.patients(patientQuery, '', 0, 20)
+        .then((patientPage) => {
+          setPatients(patientPage.content);
+        })
+        .catch(() => {
+          setPatients([]);
+        });
+    }, 200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [patientQuery]);
+
+  useEffect(() => {
+    if (isEdit || !user?.id) {
+      return;
+    }
+    setForm((current) => (current.doctorId ? current : { ...current, doctorId: user.id }));
+  }, [isEdit, user?.id]);
+
+  useEffect(() => {
+    if (isEdit) {
+      return;
+    }
+    setLoadedRecord(null);
+    setPatientDropdownOpen(false);
+    setPatientQuery('');
+    setForm(createEmptyForm(user?.id ?? 0));
+    setError('');
+  }, [isEdit, user?.id]);
+
+  useEffect(() => {
+    if (!isEdit) {
+      return;
+    }
+    if (!isRecordIdValid) {
+      setLoadingRecord(false);
+      setLoadedRecord(null);
+      setError('病历编号无效');
+      return;
+    }
+
+    let cancelled = false;
+    setLoadingRecord(true);
+    setError('');
+    void api.record(numericRecordId)
+      .then((record) => {
+        if (cancelled) {
+          return;
+        }
+        setLoadedRecord(record);
+        setPatientQuery(record.patientName);
+        setPatientDropdownOpen(false);
+        setForm(toRecordPayload(record));
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setLoadedRecord(null);
+          setError(err instanceof Error ? err.message : '病历加载失败');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingRecord(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isEdit, isRecordIdValid, numericRecordId]);
+
+  const doctorOptions = useMemo(() => {
+    if (!user || doctors.some((doctor) => doctor.id === user.id)) {
+      return doctors;
+    }
+    return [user, ...doctors];
+  }, [doctors, user]);
+
+  const selectPatient = (patient: Patient) => {
+    setPatientQuery(patient.name);
+    setPatientDropdownOpen(false);
+    setForm((current) => ({ ...current, patientId: patient.id }));
+  };
+
+  const resetForm = () => {
+    setError('');
+    setPatientDropdownOpen(false);
+    if (loadedRecord) {
+      setPatientQuery(loadedRecord.patientName);
+      setForm(toRecordPayload(loadedRecord));
+      return;
+    }
+    setPatientQuery('');
+    setForm(createEmptyForm(user?.id ?? 0));
+  };
+
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
+    if (isEdit && !isRecordIdValid) {
+      setError('病历编号无效');
+      return;
+    }
+    if (!form.patientId) {
+      setError('请选择患者姓名');
+      return;
+    }
+    if (!form.doctorId) {
+      setError('请选择医生');
+      return;
+    }
     try {
-      await api.createRecord(form);
-      navigate('/records');
+      if (isEdit && numericRecordId !== null) {
+        await api.updateRecord(numericRecordId, form);
+        navigate(`/records/${numericRecordId}`);
+      } else {
+        await api.createRecord(form);
+        navigate('/records');
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '提交失败');
+      setError(err instanceof Error ? err.message : isEdit ? '保存失败' : '提交失败');
     }
   };
+
+  const action = isEdit && isRecordIdValid
+    ? <button type="button" className="btn-secondary" onClick={() => navigate(`/records/${numericRecordId}`)}><Eye size={20} />查看当前病历</button>
+    : <button type="button" className="btn-secondary" onClick={() => navigate('/records')}>查看历史病历</button>;
 
   return (
     <form onSubmit={submit}>
       <PageHeader
-        title="录入新病历"
-        description="请按照临床标准如实填写患者诊疗信息。"
-        action={<button type="button" className="btn-secondary" onClick={() => navigate('/records')}>查看历史草稿</button>}
+        title={isEdit ? '编辑病历' : '录入新病历'}
+        description={isEdit ? '更新既有病历内容并保留临床字段的一致性。' : '请按照临床标准如实填写患者诊疗信息。'}
+        action={action}
       />
+      {loadingRecord && <div className="panel mb-8 text-sm font-semibold text-muted">正在加载病历内容...</div>}
       <div className="panel mb-8 grid gap-6 md:grid-cols-3">
-        <label><span className="form-label required">就诊日期</span><input className="input-field" type="date" value={form.visitDate} onChange={(e) => setForm({ ...form, visitDate: e.target.value })} /></label>
-        <label><span className="form-label required">姓名</span><select className="input-field" value={form.patientId} onChange={(e) => setForm({ ...form, patientId: Number(e.target.value) })}>{patients.map((patient) => <option key={patient.id} value={patient.id}>{patient.name}</option>)}</select></label>
-        <label><span className="form-label required">医生</span><select className="input-field" value={form.doctorId} onChange={(e) => setForm({ ...form, doctorId: Number(e.target.value) })}>{doctors.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.name} ({doctor.title})</option>)}</select></label>
+        <VisitDateTimeField
+          id="visit-datetime"
+          label="就诊时间"
+          visitDate={form.visitDate}
+          visitTime={form.visitTime}
+          onChange={({ visitDate, visitTime }) => setForm({ ...form, visitDate, visitTime })}
+          required
+        />
+        <div className="relative">
+          <label htmlFor="patient-name"><span className="form-label required">姓名</span></label>
+          <input
+            id="patient-name"
+            className="input-field"
+            value={patientQuery}
+            onBlur={() => window.setTimeout(() => setPatientDropdownOpen(false), 120)}
+            onChange={(event) => {
+              setPatientQuery(event.target.value);
+              setPatientDropdownOpen(true);
+              setForm((current) => ({ ...current, patientId: 0 }));
+            }}
+            onFocus={() => setPatientDropdownOpen(true)}
+            placeholder="输入姓名搜索患者"
+            required
+          />
+          {patientDropdownOpen && (
+            <div className="absolute z-20 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-outline bg-white p-2 shadow-lg">
+              {patients.length > 0 ? patients.map((patient) => (
+                <button
+                  type="button"
+                  className="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-ink hover:bg-surface-low"
+                  key={patient.id}
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    selectPatient(patient);
+                  }}
+                >
+                  <span>{patient.name}</span>
+                  <span className="ml-2 text-xs text-muted">{patient.gender === 'FEMALE' ? '女' : patient.gender === 'MALE' ? '男' : '其他'} · {patient.age}岁 · {patient.team}</span>
+                </button>
+              )) : (
+                <div className="px-3 py-2 text-sm font-semibold text-muted">未找到匹配患者</div>
+              )}
+            </div>
+          )}
+        </div>
+        <label><span className="form-label required">医生</span><select className="input-field" value={form.doctorId} onChange={(e) => setForm({ ...form, doctorId: Number(e.target.value) })}><option value={0} disabled>请选择医生</option>{doctorOptions.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.name}{doctor.title ? ` (${doctor.title})` : ''}</option>)}</select></label>
       </div>
 
       <div className="grid gap-8 xl:grid-cols-[1fr_360px]">
@@ -76,34 +287,16 @@ export function NewRecordPage() {
           </section>
         </div>
         <aside className="space-y-6">
-          <div className="side-card amber">
-            <h3>用药情况</h3>
-            {form.medications.map((med, index) => (
-              <div className="rounded-lg bg-surface-low p-5" key={`${med.name}-${index}`}>
-                <label><span className="form-label">药品名称</span><input className="input-field" value={med.name} onChange={(e) => {
-                  const next = [...form.medications]; next[index] = { ...med, name: e.target.value }; setForm({ ...form, medications: next });
-                }} /></label>
-                <label><span className="form-label">用法用量</span><input className="input-field" value={med.dosage} onChange={(e) => {
-                  const next = [...form.medications]; next[index] = { ...med, dosage: e.target.value }; setForm({ ...form, medications: next });
-                }} /></label>
-              </div>
-            ))}
-            <button type="button" className="btn-dashed" onClick={() => setForm({ ...form, medications: [...form.medications, { name: '', dosage: '' }] })}><Plus size={18} />添加用药</button>
-          </div>
           <div className="side-card">
             <h3>备注</h3>
             <textarea className="input-field min-h-32" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="其他需要补充的临床细节、过敏史提醒等..." />
-          </div>
-          <div className="rounded-xl bg-blue-50 p-6 text-blue-800">
-            <div className="mb-2 flex items-center gap-2 font-headline font-extrabold"><Calendar size={20} />临床指南提醒</div>
-            <p className="text-sm font-semibold leading-6">请确保诊断编码符合 ICD-10 标准。</p>
           </div>
         </aside>
       </div>
       {error && <div className="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
       <div className="mt-10 flex justify-end gap-4 border-t border-outline/60 pt-8">
-        <button type="reset" className="btn-secondary">重置</button>
-        <button className="btn-primary"><Save size={20} />提交档案</button>
+        <button type="button" className="btn-secondary" onClick={resetForm}>重置</button>
+        <button className="btn-primary"><Save size={20} />{isEdit ? '保存修改' : '提交档案'}</button>
       </div>
     </form>
   );

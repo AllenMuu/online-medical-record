@@ -23,7 +23,9 @@ public final class Mapper {
                 user.isActive(),
                 profile == null ? null : profile.getTitle(),
                 profile == null ? null : profile.getDepartment(),
-                profile == null ? null : profile.getAvatarUrl());
+                profile == null ? null : profile.getAvatarUrl(),
+                user.getCreatedAt(),
+                user.getUpdatedAt());
     }
 
     public static PatientResponse patient(Patient patient) {
@@ -35,7 +37,9 @@ public final class Mapper {
                 patient.getTeam(),
                 patient.getPhone(),
                 patient.getBirthDate(),
-                patient.getSummary());
+                patient.getSummary(),
+                patient.getCreatedAt(),
+                patient.getUpdatedAt());
     }
 
     public static MedicalRecordResponse medicalRecord(MedicalRecord record) {
@@ -60,6 +64,8 @@ public final class Mapper {
                 record.getStatus(),
                 record.getMedications().stream()
                         .map(med -> new MedicationResponse(med.getId(), med.getName(), med.getDosage()))
-                        .toList());
+                        .toList(),
+                record.getCreatedAt(),
+                record.getUpdatedAt());
     }
 }

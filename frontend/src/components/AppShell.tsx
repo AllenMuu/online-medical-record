@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, FileText, Gauge, LogOut, Plus, Search, Settings, Shield, Users } from 'lucide-react';
+import { Bell, CalendarDays, FileText, Gauge, LogOut, Plus, Settings, Shield, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
@@ -68,16 +68,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="md:pl-[280px]">
-        <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-outline/50 bg-white/75 px-5 backdrop-blur md:px-10">
-          <div className="relative w-full max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input className="input-pill w-full pl-12" placeholder="全局搜索患者、病历、医生..." />
-          </div>
-          <div className="ml-4 flex items-center gap-5">
-            <div className="relative text-slate-600">
+        <header className="sticky top-0 z-10 flex h-20 items-center justify-end border-b border-outline/50 bg-white/75 px-5 backdrop-blur md:px-10">
+          <div className="flex items-center gap-5">
+            <span className="relative inline-flex text-slate-600">
               <Bell size={24} />
               <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full bg-red-600" />
-            </div>
+            </span>
             <button
               className="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 md:block"
               aria-label="退出登录"
@@ -85,7 +81,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <LogOut size={21} />
             </button>
-            <div className="flex items-center gap-3 border-l border-outline/70 pl-5">
+            <button
+              type="button"
+              className="flex items-center gap-3 border-l border-outline/70 pl-5 text-left transition hover:opacity-85 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              aria-label="打开设置"
+              onClick={() => navigate('/settings')}
+            >
               <div className="text-right">
                 <div className="font-headline text-sm font-extrabold">{user?.name}</div>
                 <div className="text-xs text-muted">{user?.title || (user?.role === 'ADMIN' ? '系统管理员' : '临床医生')}</div>
@@ -98,7 +99,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   'https://lh3.googleusercontent.com/aida-public/AB6AXuA2SvgHuI_MCXg-jIRL2kNz7rC6jxnIRaNy6X3Dm-tgwFEkR9DAFzCSMVAy75wC7P_yBkFtl2KY4GTcJIMqEQ-Y2ZFT_Zqhi9lcQhI_fk4LqrUAKKaZOgywTk1UiHoieAzqd0p9l06OjN09jU4pvY6t0r3UQFQ0HlKQ7-RsLDsMImLSvPVOGqPz4rKGB1rntPS688oX0LNnsrAOms6M3-A_s4S9JcgLGJyO69GUHNyzMhuRN6_0BXtyu-Iq9y1h3IxqrZ8-NH45cxs'
                 }
               />
-            </div>
+            </button>
           </div>
         </header>
         <main className="mx-auto max-w-[1440px] px-5 py-10 md:px-10">{children}</main>

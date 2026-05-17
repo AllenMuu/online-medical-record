@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.Instant;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDate;
 
 /**
@@ -16,8 +16,10 @@ import java.time.LocalDate;
  * 保存患者基础资料，用于病历录入和检索。
  */
 @Entity
-@Table(name = "patients")
-public class Patient {
+@Table(
+        name = "patients",
+        uniqueConstraints = @UniqueConstraint(name = "uk_patients_name_team", columnNames = {"name", "team"}))
+public class Patient extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,9 +51,6 @@ public class Patient {
     /** 病史摘要或情况简介。 */
     @Column(length = 1000)
     private String summary;
-
-    /** 档案创建时间。 */
-    private Instant createdAt = Instant.now();
 
     public Long getId() {
         return id;
@@ -117,11 +116,4 @@ public class Patient {
         this.summary = summary;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 }
