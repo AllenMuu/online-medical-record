@@ -17,5 +17,33 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./backend
+    container_name: aura-medical-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/medical_record
+      SPRING_DATASOURCE_USERNAME: medical
+      SPRING_DATASOURCE_PASSWORD: medical
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:5173
+      APP_STORAGE_AVATAR_DIR: /app/uploads/avatars
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: aura-medical-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
 volumes:
   postgres18_data:
+  backend_uploads:
