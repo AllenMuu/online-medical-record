@@ -1,4 +1,4 @@
-import { ArrowRight, Eye, Lock, UserRound } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock, UserRound } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { api } from '../api';
@@ -9,6 +9,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [resetToken, setResetToken] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,8 +60,22 @@ export function LoginPage() {
           </div>
           <div className="relative mb-5">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input className="input-field px-12" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="请输入登录密码" />
-            <Eye className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              className="input-field px-12"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="请输入登录密码"
+            />
+            <button
+              type="button"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? '隐藏密码' : '显示密码'}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
           <label className="mb-8 flex items-center gap-3 text-sm font-semibold text-slate-700">
             <input type="checkbox" className="h-5 w-5 rounded border-outline" />
@@ -74,7 +89,7 @@ export function LoginPage() {
           </button>
         </form>
       </div>
-      <footer className="pb-8 text-center text-xs font-semibold text-slate-400">隐私政策 | 服务条款 | 联系支持 | © 2024 Ice 临床管理系统</footer>
+      <footer className="pb-8 text-center text-xs font-semibold text-slate-400">隐私政策 | 服务条款 | 联系支持 | © 2026 Ice 临床管理系统</footer>
     </div>
   );
 }
