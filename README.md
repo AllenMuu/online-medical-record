@@ -1,41 +1,43 @@
 # online-medical-record
 
-临床精准系统全栈原型：Spring Boot API + React 管理端 + PostgreSQL 18。
+A full-stack prototype for a clinical precision system: Spring Boot API + React admin app + PostgreSQL 18.
+
+[简体中文](./README_zh.md)
 
 ## Quick Start
 
-### Docker 一键部署整个项目
+### Deploy the entire project with Docker in one command
 
 ```bash
 ./start-docker.sh
 ```
 
-启动后访问：
+Once started, visit:
 
-- 前端：`http://localhost:5173`
-- 后端 API：`http://localhost:8080/api`
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8080/api`
 
-如果你想启动后直接跟随日志：
+If you want to follow the logs right after startup:
 
 ```bash
 ./start-docker.sh --logs
 ```
 
-停止并移除容器：
+Stop and remove the containers:
 
 ```bash
 ./stop-docker.sh
 ```
 
-这只会停止并移除容器，不会删除数据库数据卷。
+This only stops and removes the containers; it does not delete the database data volume.
 
-如果你明确要清空本地数据库数据，再单独执行：
+If you explicitly want to wipe the local database data, run separately:
 
 ```bash
 docker compose down -v
 ```
 
-### 本地开发启动
+### Run locally for development
 
 ```bash
 docker compose up -d db
@@ -43,54 +45,54 @@ cd backend && mvn spring-boot:run
 cd ../frontend && npm ci && npm run dev
 ```
 
-也可以直接在仓库根目录一键启动前后端：
+You can also start both the frontend and backend in one go from the repository root:
 
 ```bash
 chmod +x ./start-local.sh
 ./start-local.sh
 ```
 
-默认会优先尝试完整 Docker 环境；如果 Docker 不可用则回退到 `demo` 模式（H2 内存数据库）。如果你想强制连本地 Docker PostgreSQL：
+By default it tries the full Docker environment first; if Docker is unavailable it falls back to `demo` mode (H2 in-memory database). To force a connection to the local Docker PostgreSQL:
 
 ```bash
 ./start-local.sh docker
 ```
 
-如果只是本机快速体验，也可以不启动 Docker，使用内存数据库 demo profile：
+If you just want a quick local trial, you can skip Docker entirely and use the in-memory database demo profile:
 
 ```bash
 cd backend && mvn spring-boot:run -Dspring-boot.run.profiles=demo
 cd ../frontend && npm ci && npm run dev
 ```
 
-如果 `8080` 已被占用，可改用其他后端端口，并让 Vite 代理跟随：
+If port `8080` is already taken, you can switch to another backend port and have the Vite proxy follow:
 
 ```bash
 cd backend && mvn spring-boot:run -Dspring-boot.run.profiles=demo -Dspring-boot.run.arguments=--server.port=8081
 cd ../frontend && VITE_API_PROXY_TARGET=http://localhost:8081 npm run dev
 ```
 
-## PostgreSQL（Docker）
+## PostgreSQL (Docker)
 
-仓库自带的 `docker-compose.yml` 使用 `postgres:18.4-alpine`，默认会启动：
+The `docker-compose.yml` bundled with this repository uses `postgres:18.4-alpine` and starts the following by default:
 
-- 容器名：`aura-medical-postgres`
-- 数据库：`medical_record`
-- 用户名：`medical`
-- 密码：`medical`
-- 端口：`5432`
+- Container name: `aura-medical-postgres`
+- Database: `medical_record`
+- Username: `medical`
+- Password: `medical`
+- Port: `5432`
 
-为兼容 PostgreSQL 18 官方镜像的数据目录规则，当前配置使用：
+To comply with the data directory rules of the official PostgreSQL 18 image, the current configuration uses:
 
 - `PGDATA=/var/lib/postgresql/18/docker`
-- Docker volume：`postgres18_data`
+- Docker volume: `postgres18_data`
 
-这是一个新项目，本地没有历史数据库需要迁移。若你需要重建一个干净的本地库，可以直接删除并重建对应 volume。
+This is a new project with no local historical database to migrate. If you need a clean local database, you can simply delete and recreate the corresponding volume.
 
-默认账号：
+Default accounts:
 
-- 管理员：`admin@aura.local` / `Admin123!`
-- 医生：`doctor@aura.local` / `Doctor123!`
+- Administrator: `admin@aura.local` / `Admin123!`
+- Doctor: `doctor@aura.local` / `Doctor123!`
 
-前端开发地址：`http://localhost:5173`
-后端 API：`http://localhost:8080/api`
+Frontend dev URL: `http://localhost:5173`
+Backend API: `http://localhost:8080/api`
